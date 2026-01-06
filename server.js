@@ -4,17 +4,16 @@ const db = require('./config/database');
 
 // --- IMPOR MODEL ---
 const User = require('./models/User');
-const Product = require('./models/Product');
-const ProductItem = require('./models/ProductItem');
+const Product = require('./models/Product'); // Diubah dari ProductItem menjadi Product
 const Cart = require('./models/Cart');
 const Order = require('./models/Order');
-const OrderItem = require('./models/OrderItem');
 const Transaction = require('./models/Transaction');
+
+// ... sisa kode server ...
 
 // --- IMPOR ROUTES ---
 const userRoutes = require('./routes/userRoutes');
 const productRoutes = require('./routes/productRoutes');
-const productItemRoutes = require('./routes/productItemRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const transactionRoutes = require('./routes/transactionRoutes');
@@ -43,9 +42,6 @@ app.use('/api/users', userRoutes);
 
 // Gunakan Product Routes
 app.use('/api/products', productRoutes);
-
-// Gunakan Product Item Routes
-app.use('/api/product-items', productItemRoutes);
 
 // Gunakan Cart Routes
 app.use('/api/cart', cartRoutes);

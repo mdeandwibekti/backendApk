@@ -1,43 +1,45 @@
 const { DataTypes } = require('sequelize');
 const db = require('../config/database');
 
-const Product = db.define('products', {
+const Product = db.define('Product', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
     },
-    seller_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
     name: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(150), // Sesuai panjang di SRS
         allowNull: false
     },
     price: {
-        type: DataTypes.DOUBLE,
+        type: DataTypes.STRING, // SRS meminta Varchar untuk Price
+        allowNull: false
+    },
+    stock: {
+        type: DataTypes.INTEGER,
         allowNull: false
     },
     description: {
         type: DataTypes.TEXT,
         allowNull: true
     },
-    category: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
     image: {
-        type: DataTypes.STRING, // Menyimpan nama file gambar atau URL
+        type: DataTypes.STRING(255),
         allowNull: true
     },
-    stock: {
+    seller_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        defaultValue: 0
+        references: {
+            model: 'Users', // Nama tabel User di database
+            key: 'id'
+        }
     }
 }, {
-    freezeTableName: true
+    tableName: 'products',
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'update_at' // Sesuai penamaan di SRS
 });
 
 module.exports = Product;
