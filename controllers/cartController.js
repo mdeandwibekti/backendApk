@@ -5,74 +5,45 @@ const Product = require('../models/Product');
 // --- ADD TO CART ---
 exports.addToCart = async (req, res) => {
     try {
-        const { user_id, product_id, quantity } = req.body;
+        // user_id diambil dari middleware verifyToken (req.user)
+        const user_id = req.user.id; 
+        const { product_id, quantity } = req.body;
 
-        // Validasi input
-        if (!user_id || !product_id || !quantity) {
-            return res.status(400).json({ msg: "User ID, Product ID, dan Quantity harus diisi!" });
+        if (!product_id || !quantity) {
+            return res.status(400).json({ msg: "Product ID dan Quantity harus diisi!" });
         }
 
-        if (quantity < 1) {
-            return res.status(400).json({ msg: "Quantity harus minimal 1!" });
-        }
-
-        // Cek user exist
-        const user = await User.findByPk(user_id);
-        if (!user) {
-            return res.status(404).json({ msg: "User tidak ditemukan" });
-        }
-
-        // Cek product exist
         const product = await Product.findByPk(product_id);
-        if (!product) {
-            return res.status(404).json({ msg: "Produk tidak ditemukan" });
-        }
+        if (!product) return res.status(404).json({ msg: "Produk tidak ditemukan" });
 
-        // Cek stock produk
         if (product.stock < quantity) {
-            return res.status(400).json({ msg: `Stock tidak cukup. Tersedia: ${product.stock}` });
+            return res.status(400).json({ msg: `Stok tidak cukup. Tersedia: ${product.stock}` });
         }
 
-        // Cek apakah produk sudah ada di cart
-        let cartItem = await Cart.findOne({
-            where: { user_id, product_id }
-        });
+        let cartItem = await Cart.findOne({ where: { user_id, product_id } });
 
         if (cartItem) {
-            // Jika sudah ada, update quantity
             const newQuantity = cartItem.quantity + quantity;
-
             if (product.stock < newQuantity) {
-                return res.status(400).json({ msg: `Stock tidak cukup. Tersedia: ${product.stock}` });
+                return res.status(400).json({ msg: "Stok tidak cukup untuk tambahan ini" });
             }
-
             cartItem.quantity = newQuantity;
             cartItem.subtotal = product.price * newQuantity;
             await cartItem.save();
-
-            return res.json({
-                msg: "Produk di cart berhasil diupdate",
-                data: cartItem
-            });
+            return res.json({ status: true, msg: "Keranjang diperbarui", data: cartItem });
         }
 
-        // Jika belum ada, buat cart item baru
-        const subtotal = product.price * quantity;
         const newCartItem = await Cart.create({
             user_id,
             product_id,
             quantity,
-            subtotal
+            subtotal: product.price * quantity
         });
 
-        res.status(201).json({
-            msg: "Produk berhasil ditambahkan ke cart",
-            data: newCartItem
-        });
+        res.status(201).json({ status: true, msg: "Berhasil ditambah ke keranjang", data: newCartItem });
 
     } catch (error) {
-        console.log("ERROR ADD TO CART:", error);
-        res.status(500).json({ msg: error.message });
+        res.status(500).json({ status: false, msg: error.message });
     }
 };
 
@@ -95,7 +66,7 @@ exports.getCartByUserId = async (req, res) => {
                     attributes: ['id', 'name', 'price', 'description', 'image', 'stock']
                 }
             ],
-            order: [['createdAt', 'DESC']]
+            order: [['created_at', 'DESC']]
         });
 
         if (cartItems.length === 0) {

@@ -2,7 +2,7 @@
   "development": {
     "username": "root",
     "password": "Deandwib12345*",
-    "database": "shoppeumkm",
+    "database": "shoppe",
     "host": "127.0.0.1",
     "port": "3308",
     "dialect": "mysql"

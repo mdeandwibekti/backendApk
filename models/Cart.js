@@ -21,7 +21,10 @@ const Cart = db.define('carts', {
         defaultValue: 1
     }
 }, {
-    freezeTableName: true
+    freezeTableName: true,
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
 });
 
 module.exports = Cart;

@@ -21,12 +21,15 @@ const Order = db.define('orders', {
         allowNull: false
     },
     status: {
-        type: DataTypes.STRING, // Contoh: 'pending', 'paid', 'shipped'
+        type: DataTypes.STRING,
         allowNull: false,
         defaultValue: 'pending'
     }
 }, {
-    freezeTableName: true
+    freezeTableName: true,
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
 });
 
 module.exports = Order;

@@ -21,11 +21,19 @@ const User = db.define('users', {
         unique: true
     },
     role: {
-        type: DataTypes.STRING, // Contoh isi: 'seller', 'user'
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    is_active: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
         allowNull: false
     }
 }, {
-    freezeTableName: true
+    freezeTableName: true,
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
 });
 
 module.exports = User;

@@ -69,7 +69,7 @@ exports.getAllTransactions = async (req, res) => {
                     attributes: ['id', 'total_price', 'status']
                 }
             ],
-            order: [['createdAt', 'DESC']]
+            order: [['created_at', 'DESC']]
         });
 
         res.json({
@@ -130,7 +130,7 @@ exports.getTransactionByUserId = async (req, res) => {
                     attributes: ['id', 'total_price', 'status']
                 }
             ],
-            order: [['createdAt', 'DESC']]
+            order: [['created_at', 'DESC']]
         });
 
         if (transactions.length === 0) {

@@ -13,24 +13,18 @@ const Transaction = db.define('transactions', {
     },
     product_id: {
         type: DataTypes.INTEGER,
-        allowNull: true // Boleh null jika transaksi gabungan banyak produk
+        allowNull: true
     },
     status: {
         type: DataTypes.ENUM('pending', 'processing', 'success', 'failed', 'cancelled'),
         defaultValue: 'pending',
         allowNull: false
-    },
-    createdAt: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
-        onUpdate: DataTypes.NOW
     }
 }, {
-    freezeTableName: true
+    freezeTableName: true,
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
 });
 
 module.exports = Transaction;

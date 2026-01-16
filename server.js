@@ -1,6 +1,9 @@
 const express = require('express');
+const multer = require('multer');
 const cors = require('cors');
 const db = require('./config/database');
+const path = require('path');
+require('dotenv').config();
 
 // --- IMPOR MODEL ---
 const User = require('./models/User');
@@ -28,7 +31,7 @@ app.use(express.json());
 (async () => {
     try {
         await db.authenticate();
-        console.log('Database connected to shoppe_clone_db...');
+        console.log('Database connected to shoppee...');
         await db.sync(); 
     } catch (error) {
         console.error('Connection error:', error);
@@ -52,5 +55,14 @@ app.use('/api/orders', orderRoutes);
 // Gunakan Transaction Routes
 app.use('/api/transactions', transactionRoutes);
 
-const PORT = 3000;
-app.listen(3000, () => console.log('Server running on http://localhost:3000'));
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+
+app.listen(3000, '0.0.0.0', () => {
+    console.log('Server running on port 3000');
+});
+
+
+app.use((err, req, res, next) => {
+  console.error('Error:', err); // tampilkan error di terminal
+  res.status(500).json({ message: 'Internal server error', error: err.message });
+});

@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
 
@@ -34,43 +35,44 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({
-        status: false,
-        msg: 'Email dan password harus diisi!'
-      });
-    }
-
     const user = await User.findOne({ where: { email } });
-
     if (!user) {
-      return res.status(404).json({
-        status: false,
-        msg: 'User tidak ditemukan'
-      });
+      return res.status(401).json({ message: "Email tidak ditemukan" });
     }
 
-    // 🔐 COMPARE HASH
+    // ✅ FIX 1: CEK USER AKTIF
+    if (user.is_active === false) {
+      return res.status(401).json({ message: "Akun dinonaktifkan" });
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
-
     if (!isMatch) {
-      return res.status(401).json({
-        status: false,
-        msg: 'Password salah'
-      });
+      return res.status(401).json({ message: "Password salah" });
     }
+
+    // ✅ FIX 2: VALIDASI ROLE
+    if (!user.role) {
+      return res.status(401).json({ message: "Role user tidak valid" });
+    }
+
+    const token = jwt.sign(
+      {
+        id: user.id,
+        role: user.role
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
 
     res.json({
       status: true,
-      message: 'Login berhasil',
+      message: "Login berhasil",
+      token,
       user
     });
 
   } catch (error) {
-    res.status(500).json({
-      status: false,
-      msg: error.message
-    });
+    res.status(500).json({ message: error.message });
   }
 };
 
